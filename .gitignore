@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.env
+.DS_Store
+.knowledge-escrow/
+*.log
+vendor/models/
+release/
+.build-tmp/

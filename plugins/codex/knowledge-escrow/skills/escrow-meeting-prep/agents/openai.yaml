@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meeting Prep"
+  short_description: "Walk into every meeting knowing the history"
+  default_prompt: "Prep me for my next meeting using what Knowledge Escrow remembers about the people and topics."
