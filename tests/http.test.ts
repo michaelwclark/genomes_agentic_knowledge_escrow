@@ -65,6 +65,6 @@ describe('HTTP observability', () => {
     const metrics = await fetch(`${base}/metrics?hours=1`);
     const text = await metrics.text();
     expect(metrics.headers.get('content-type')).toContain('text/plain');
-    expect(text).toContain('genomes_brain_operations_total 2');
+    expect(text).toContain('knowledge_escrow_operations_total 2');
   });
 });

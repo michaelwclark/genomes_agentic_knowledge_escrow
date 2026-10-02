@@ -173,7 +173,7 @@ export class PostgresDocumentStore {
   }
 
   async ping(): Promise<boolean> {
-    const probe = await this.embedMemory('Genome Brain pgvector health check');
+    const probe = await this.embedMemory('Knowledge Escrow pgvector health check');
     await this.ensureSchema(probe?.length);
     await this.query('SELECT 1', []);
     return true;

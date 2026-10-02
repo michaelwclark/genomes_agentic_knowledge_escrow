@@ -38,7 +38,7 @@ export async function runStdioHttpProxy(options: StdioHttpProxyOptions): Promise
   }
 
   if (buffer.toString('utf8').trim()) {
-    throw new Error('Genome Brain stdio proxy received an incomplete JSON-RPC message.');
+    throw new Error('Knowledge Escrow stdio proxy received an incomplete JSON-RPC message.');
   }
 }
 

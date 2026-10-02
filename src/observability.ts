@@ -257,29 +257,29 @@ ${substrateRows || '| No hits | 0 |'}
 
 export function renderPrometheus(summary: AnalyticsSummary): string {
   const lines = [
-    '# HELP genomes_brain_operations_total Memory operations observed in the reporting window.',
-    '# TYPE genomes_brain_operations_total gauge',
-    `genomes_brain_operations_total ${summary.operations}`,
-    '# HELP genomes_brain_errors_total Failed memory operations in the reporting window.',
-    '# TYPE genomes_brain_errors_total gauge',
-    `genomes_brain_errors_total ${summary.errors}`,
-    '# HELP genomes_brain_read_hit_ratio Fraction of reads returning at least one hit.',
-    '# TYPE genomes_brain_read_hit_ratio gauge',
-    `genomes_brain_read_hit_ratio ${summary.readHitRate}`,
-    '# HELP genomes_brain_write_dedupe_ratio Fraction of writes deduplicated.',
-    '# TYPE genomes_brain_write_dedupe_ratio gauge',
-    `genomes_brain_write_dedupe_ratio ${summary.dedupeRate}`,
-    '# HELP genomes_brain_operation_duration_ms Operation latency percentiles.',
-    '# TYPE genomes_brain_operation_duration_ms gauge',
-    `genomes_brain_operation_duration_ms{quantile="0.5"} ${summary.p50DurationMs}`,
-    `genomes_brain_operation_duration_ms{quantile="0.95"} ${summary.p95DurationMs}`
+    '# HELP knowledge_escrow_operations_total Memory operations observed in the reporting window.',
+    '# TYPE knowledge_escrow_operations_total gauge',
+    `knowledge_escrow_operations_total ${summary.operations}`,
+    '# HELP knowledge_escrow_errors_total Failed memory operations in the reporting window.',
+    '# TYPE knowledge_escrow_errors_total gauge',
+    `knowledge_escrow_errors_total ${summary.errors}`,
+    '# HELP knowledge_escrow_read_hit_ratio Fraction of reads returning at least one hit.',
+    '# TYPE knowledge_escrow_read_hit_ratio gauge',
+    `knowledge_escrow_read_hit_ratio ${summary.readHitRate}`,
+    '# HELP knowledge_escrow_write_dedupe_ratio Fraction of writes deduplicated.',
+    '# TYPE knowledge_escrow_write_dedupe_ratio gauge',
+    `knowledge_escrow_write_dedupe_ratio ${summary.dedupeRate}`,
+    '# HELP knowledge_escrow_operation_duration_ms Operation latency percentiles.',
+    '# TYPE knowledge_escrow_operation_duration_ms gauge',
+    `knowledge_escrow_operation_duration_ms{quantile="0.5"} ${summary.p50DurationMs}`,
+    `knowledge_escrow_operation_duration_ms{quantile="0.95"} ${summary.p95DurationMs}`
   ];
   for (const [method, rollup] of Object.entries(summary.methods)) {
-    lines.push(`genomes_brain_method_operations_total{method="${method}"} ${rollup.count}`);
-    lines.push(`genomes_brain_method_errors_total{method="${method}"} ${rollup.errors}`);
+    lines.push(`knowledge_escrow_method_operations_total{method="${method}"} ${rollup.count}`);
+    lines.push(`knowledge_escrow_method_errors_total{method="${method}"} ${rollup.errors}`);
   }
   for (const [substrate, hits] of Object.entries(summary.substrateHits)) {
-    lines.push(`genomes_brain_substrate_hits_total{substrate="${escapeLabel(substrate)}"} ${hits}`);
+    lines.push(`knowledge_escrow_substrate_hits_total{substrate="${escapeLabel(substrate)}"} ${hits}`);
   }
   return `${lines.join('\n')}\n`;
 }
