@@ -1,0 +1,73 @@
+#!/bin/sh
+# Knowledge Escrow MCP launcher. Invoked by Codex as a stdio MCP server
+# (./.codex-plugin/mcp.json: command "sh", args ["./bin/escrow"]), so this
+# script must never write anything to stdout — only the JSON-RPC bridge may.
+# All diagnostics go to stderr.
+set -eu
+
+# Under `env -i` (used by our own raw-stdio proof, and plausibly by some
+# sandboxed launchers) PATH may be empty or missing, which breaks even
+# `uname`/`dirname` below.
+PATH="/usr/bin:/bin${PATH:+:$PATH}"
+export PATH
+
+# Resolve this script's own directory (plugin-root/bin) and the plugin root.
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+PLUGIN_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
+
+# The bundled local embedding model always ships at this fixed path relative
+# to the plugin root; only override if the environment already set one.
+if [ -z "${KNOWLEDGE_ESCROW_LOCAL_MODEL_DIR:-}" ]; then
+  KNOWLEDGE_ESCROW_LOCAL_MODEL_DIR="$PLUGIN_ROOT/models/potion-base-8M"
+  export KNOWLEDGE_ESCROW_LOCAL_MODEL_DIR
+fi
+
+ARCH=$(uname -m)
+SEA_BIN="$SCRIPT_DIR/escrow-darwin-$ARCH"
+
+node_version_at_least() {
+  # $1: node binary to check. Prints nothing; exit status is the answer.
+  node_bin="$1"
+  version=$("$node_bin" -p 'process.versions.node' 2>/dev/null) || return 1
+  major=$(echo "$version" | cut -d. -f1)
+  minor=$(echo "$version" | cut -d. -f2)
+  case "$major" in '' | *[!0-9]*) return 1 ;; esac
+  case "$minor" in '' | *[!0-9]*) return 1 ;; esac
+  if [ "$major" -gt 22 ]; then
+    return 0
+  fi
+  if [ "$major" -eq 22 ] && [ "$minor" -ge 13 ]; then
+    return 0
+  fi
+  return 1
+}
+
+# 1. Prebuilt Node single-executable application for this host arch. No
+#    Node install required on the teammate's machine at all. Probe it with a
+#    cheap non-MCP command first: macOS Gatekeeper/quarantine can block an
+#    ad-hoc-signed binary from launching at all (killed by the OS, not a
+#    normal nonzero exit from the program), and `-x` alone doesn't catch
+#    that. Only `exec` into it as the real stdio server if the probe exits 0.
+if [ -x "$SEA_BIN" ] && "$SEA_BIN" version >/dev/null 2>/dev/null; then
+  echo "escrow: using sea ($SEA_BIN)" >&2
+  exec "$SEA_BIN" mcp
+fi
+if [ -x "$SEA_BIN" ]; then
+  echo "escrow: sea at $SEA_BIN failed its liveness probe (blocked by Gatekeeper/quarantine, or not runnable on this host); falling back" >&2
+fi
+
+# 2. A sufficiently new Node already on PATH.
+if command -v node >/dev/null 2>&1 && node_version_at_least node; then
+  echo "escrow: using node-path ($(command -v node))" >&2
+  exec node "$PLUGIN_ROOT/server/escrow.cjs" mcp
+fi
+
+# 3. The Node runtime Codex itself vendors, as a last resort.
+CODEX_NODE="$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
+if [ -x "$CODEX_NODE" ] && node_version_at_least "$CODEX_NODE"; then
+  echo "escrow: using codex-runtime ($CODEX_NODE)" >&2
+  exec "$CODEX_NODE" "$PLUGIN_ROOT/server/escrow.cjs" mcp
+fi
+
+echo "Knowledge Escrow could not start: no bundled binary for arch '$ARCH', and no Node.js >= 22.13 was found on PATH or in the Codex runtime cache. Install Node.js 22.13+ (https://nodejs.org) and try again." >&2
+exit 1

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture"
+  short_description: "File decisions and action items so nothing is forgotten"
+  default_prompt: "Capture the decisions, action items, and people notes from these meeting notes into Knowledge Escrow."
