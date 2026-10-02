@@ -1,0 +1,70 @@
+{
+  "name": "knowledge-escrow",
+  "version": "0.1.0",
+  "description": "Local-first memory MCP server for AI agents. Remembers decisions, commitments, and people across sessions, entirely on your own machine.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "escrow": "./dist/cli.js"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "dist/",
+    "scripts/fetch-local-model.mjs",
+    "scripts/build-codex-plugin.mjs",
+    "plugins/"
+  ],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "check": "tsc --noEmit",
+    "commit": "cz",
+    "commitlint": "commitlint --edit",
+    "prepack": "npm run build",
+    "prepare": "husky",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev:mcp": "tsx src/cli.ts mcp",
+    "dev:http": "tsx src/cli.ts serve-http",
+    "escrow": "tsx src/cli.ts",
+    "fetch-local-model": "node scripts/fetch-local-model.mjs",
+    "build:codex-plugin": "node scripts/build-codex-plugin.mjs",
+    "validate": "npm run check && npm test && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "memory",
+    "agents",
+    "codex",
+    "claude",
+    "local-first"
+  ],
+  "license": "MIT",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@types/node": "26.2.0",
+    "@types/pg": "^8.21.0",
+    "commitizen": "4.3.2",
+    "cz-conventional-changelog": "3.3.0",
+    "esbuild": "^0.24.0",
+    "husky": "9.1.7",
+    "postject": "^1.0.0-alpha.6",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "pg": "^8.23.0"
+  }
+}
