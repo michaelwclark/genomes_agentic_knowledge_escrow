@@ -170,6 +170,8 @@ export interface BrainConfig {
   userMemoryRoot?: string;
   hotMemoryDirs: string[];
   hotMemoryHours: number;
+  /** Days that hook-copied session transcripts are kept under `<dataDir>/ingest`. Default 14. */
+  ingestRetentionDays?: number;
   grepRoots: string[];
   enableWrites: boolean;
   metricsEnabled: boolean;

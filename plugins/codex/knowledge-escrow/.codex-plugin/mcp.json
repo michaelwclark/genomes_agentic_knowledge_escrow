@@ -2,7 +2,9 @@
   "mcpServers": {
     "knowledge_escrow": {
       "command": "sh",
-      "args": ["./bin/escrow"],
+      "args": [
+        "./bin/escrow"
+      ],
       "cwd": ".",
       "env": {
         "KNOWLEDGE_ESCROW_DATA_DIR": "~/.knowledge-escrow",
@@ -10,7 +12,8 @@
         "KNOWLEDGE_ESCROW_EMBEDDING_PROVIDER": "local",
         "KNOWLEDGE_ESCROW_METRICS_ENABLED": "1",
         "KNOWLEDGE_ESCROW_REDACTION": "1",
-        "KNOWLEDGE_ESCROW_SERVER_NAME": "knowledge-escrow"
+        "KNOWLEDGE_ESCROW_SERVER_NAME": "knowledge-escrow",
+        "KNOWLEDGE_ESCROW_HOT_MEMORY_DIRS": "~/.knowledge-escrow/ingest/codex"
       },
       "default_tools_approval_mode": "approve"
     }
