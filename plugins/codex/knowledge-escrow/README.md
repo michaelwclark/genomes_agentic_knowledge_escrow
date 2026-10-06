@@ -34,12 +34,15 @@ codex plugin add knowledge-escrow@knowledge-escrow
 
 ## Notes
 
-- **No hooks are shipped in v1.** Codex plugin hooks do not fire on a fresh
-  install (a trust-gate behavior observed empirically against Codex CLI
-  0.155), so shipping one would silently do nothing for a new install. If
-  that changes in a future Codex release, hooks can be added then.
-- The bundled binary is built for the host machine's OS/arch only
-  (`darwin-arm64` or `darwin-x86_64`, whichever Mac this is). Cross-arch
-  builds are out of scope for v1 — the launcher (`bin/escrow`) falls back to
-  any Node.js 22.13+ on the user's PATH, or Codex's own vendored Node
-  runtime, if the bundled binary doesn't match their machine.
+- **Memory hooks.** The plugin declares a `SessionStart` hook (reminds the
+  agent to read and write memory) and a `Stop` hook (copies the session
+  transcript into `~/.knowledge-escrow/ingest/` for recent recall). Codex
+  runs plugin hooks only after you trust them: open Codex, run `/hooks`,
+  and trust the two Knowledge Escrow entries. Until then memory still works,
+  but Codex is not reminded to use it.
+- `npm run build:codex-plugin` builds for the host arch only. `npm run
+  build:release` builds release tarballs for both `darwin-arm64` and
+  `darwin-x64` (see `scripts/build-codex-plugin.mjs --help`). If the bundled
+  binary doesn't match a machine, the launcher (`bin/escrow`) falls back to
+  any Node.js 22.13+ on PATH, Codex's vendored Node, or the Node bundled in
+  the ChatGPT app.

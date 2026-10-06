@@ -1,0 +1,17 @@
+Knowledge Escrow bundles third-party components. Their licenses and
+attributions are listed here.
+
+Knowledge Escrow itself is released under the MIT License (see LICENSE).
+
+1. potion-base-8M (embedding model)
+   Copyright (c) MinishLab. Licensed under the MIT License.
+   https://huggingface.co/minishlab/potion-base-8M
+   Shipped unmodified under models/potion-base-8M/ and used for fully local
+   semantic recall.
+
+2. Node.js
+   Copyright Node.js contributors. Licensed under the MIT License, with
+   additional third-party notices at https://github.com/nodejs/node/blob/main/LICENSE
+   The single-executable binaries in bin/ (escrow-darwin-arm64,
+   escrow-darwin-x86_64) are the official Node.js runtime with the Knowledge
+   Escrow server embedded, so no separate Node.js install is needed.
