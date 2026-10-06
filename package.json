@@ -14,7 +14,8 @@
     "dist/",
     "scripts/fetch-local-model.mjs",
     "scripts/build-codex-plugin.mjs",
-    "plugins/"
+    "plugins/",
+    "install.sh"
   ],
   "engines": {
     "node": ">=22.14.0"
@@ -34,6 +35,7 @@
     "escrow": "tsx src/cli.ts",
     "fetch-local-model": "node scripts/fetch-local-model.mjs",
     "build:codex-plugin": "node scripts/build-codex-plugin.mjs",
+    "build:release": "node scripts/build-codex-plugin.mjs --release",
     "validate": "npm run check && npm test && npm run build"
   },
   "keywords": [

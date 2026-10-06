@@ -40,6 +40,22 @@ const DENYLIST = [
 // e.g. the repo's own public URL, if it ever collided with an entry above).
 const ALLOWLIST = ['github.com/michaelwclark/genomes_agentic_knowledge_escrow'];
 
+// Exact third-party lines that legitimately contain a denylisted dictionary
+// word. Each entry is pinned to a file suffix AND the full trimmed line, so a
+// real leak elsewhere (or on any other line) in the same file still fails.
+//  - the hash-pinned potion-base-8M tokenizer vocabulary (the English word)
+//  - the stock Node.js binary's bundled ICU data (a collation test string)
+const THIRD_PARTY_EXEMPTIONS = [
+  { fileSuffix: 'models/potion-base-8M/tokenizer.json', line: '"prayer": 6089,' },
+  { fileSuffix: 'models/potion-base-8M/tokenizer.json', line: '"prayers": 11589,' },
+  { fileSuffix: 'bin/escrow-darwin-arm64', line: 'RADIOVIDEOCASSETTEFILM PROJECTORPORTABLE STEREOPRAYER BEADS' },
+  { fileSuffix: 'bin/escrow-darwin-x86_64', line: 'RADIOVIDEOCASSETTEFILM PROJECTORPORTABLE STEREOPRAYER BEADS' }
+];
+
+function isExempt(file, line) {
+  return THIRD_PARTY_EXEMPTIONS.some((entry) => file.endsWith(entry.fileSuffix) && line.trim() === entry.line);
+}
+
 const SELF_PATH = path.relative(process.cwd(), new URL(import.meta.url).pathname);
 
 function stripAllowlisted(line) {
@@ -57,7 +73,7 @@ function scanTextContent(label, content) {
     const line = lines[i];
     const sanitized = stripAllowlisted(line);
     for (const term of DENYLIST) {
-      if (sanitized.toLowerCase().includes(term.toLowerCase())) {
+      if (sanitized.toLowerCase().includes(term.toLowerCase()) && !isExempt(label, line)) {
         hits.push({ file: label, lineNumber: i + 1, term, line: line.trim().slice(0, 200) });
       }
     }

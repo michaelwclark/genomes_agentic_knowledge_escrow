@@ -62,12 +62,19 @@ if command -v node >/dev/null 2>&1 && node_version_at_least node; then
   exec node "$PLUGIN_ROOT/server/escrow.cjs" mcp
 fi
 
-# 3. The Node runtime Codex itself vendors, as a last resort.
+# 3. The Node runtime Codex itself vendors, then the Node bundled inside the
+#    ChatGPT desktop app, each only if it passes the same version check.
 CODEX_NODE="$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
 if [ -x "$CODEX_NODE" ] && node_version_at_least "$CODEX_NODE"; then
   echo "escrow: using codex-runtime ($CODEX_NODE)" >&2
   exec "$CODEX_NODE" "$PLUGIN_ROOT/server/escrow.cjs" mcp
 fi
 
-echo "Knowledge Escrow could not start: no bundled binary for arch '$ARCH', and no Node.js >= 22.13 was found on PATH or in the Codex runtime cache. Install Node.js 22.13+ (https://nodejs.org) and try again." >&2
+CHATGPT_NODE="/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+if [ -x "$CHATGPT_NODE" ] && node_version_at_least "$CHATGPT_NODE"; then
+  echo "escrow: using chatgpt-app ($CHATGPT_NODE)" >&2
+  exec "$CHATGPT_NODE" "$PLUGIN_ROOT/server/escrow.cjs" mcp
+fi
+
+echo "Knowledge Escrow could not start: no bundled binary for arch '$ARCH', and no Node.js >= 22.13 was found on PATH, in the Codex runtime cache, or in the ChatGPT app. Install Node.js 22.13+ (https://nodejs.org) and try again." >&2
 exit 1

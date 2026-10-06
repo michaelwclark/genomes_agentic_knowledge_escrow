@@ -42,6 +42,9 @@ jobs:
       - name: Scrub check (source tree + build output)
         run: node scripts/scrub-check.mjs --artifacts dist
 
+      - name: Shellcheck
+        run: shellcheck install.sh plugins/codex/knowledge-escrow/bin/*
+
       - name: Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:

@@ -9,6 +9,7 @@ import { loadJsonlSessionMemories, previewJsonlSessions } from './importers/sess
 import { loadMemoryJsonl, previewMemoryJsonl } from './importers/jsonl-importer.js';
 import { renderAnalyticsMarkdown } from './observability.js';
 import { SERVICE_VERSION } from './version.js';
+import { runHook } from './hooks.js';
 
 loadDotEnv();
 const config = loadConfig();
@@ -429,6 +430,7 @@ function printHelp(): void {
 
 Usage:
   escrow version
+  escrow hook <session-start|stop> [--harness codex|claude]
   escrow doctor
   escrow doctor --check-db
   escrow health [--check-db] [--format json|markdown]
@@ -487,6 +489,18 @@ async function entry(argv: string[]): Promise<void> {
   // server. It must never create or open a data directory as a side effect.
   if (argv[0] === 'version' || argv[0] === '--version') {
     console.log(SERVICE_VERSION);
+    return;
+  }
+  // Hooks run inline with an agent session: handled before the router exists
+  // so SessionStart stays fast and never opens SQLite or the embedding model.
+  if (argv[0] === 'hook') {
+    await runHook(argv.slice(1), {
+      env: process.env,
+      stdin: process.stdin,
+      writeStdout: (text) => process.stdout.write(text),
+      writeStderr: (text) => process.stderr.write(text)
+    });
+    process.exitCode = 0;
     return;
   }
   if (argv[0] === 'proxy-http') {

@@ -3,6 +3,7 @@
   "version": "0.4.0",
   "description": "Your knowledge, held in escrow until the moment it's needed. Fully local, offline memory for Codex.",
   "mcpServers": "./.codex-plugin/mcp.json",
+  "hooks": "./.codex-plugin/hooks.json",
   "skills": "./skills/",
   "interface": {
     "displayName": "Knowledge Escrow",
@@ -10,7 +11,10 @@
     "longDescription": "Knowledge Escrow quietly remembers the decisions, commitments, and people notes from your meetings and conversations, then surfaces them again exactly when you need them. Everything stays on your own computer — nothing is uploaded, and it works without an internet connection. Sensitive customer personal data (SSNs, account numbers, dates of birth, and similar) is automatically redacted before anything is saved.",
     "developerName": "genomes_agentic",
     "category": "Productivity",
-    "capabilities": ["Interactive", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
     "defaultPrompt": [
       "Prep me for my next meeting",
       "Capture the decisions and action items from these notes",

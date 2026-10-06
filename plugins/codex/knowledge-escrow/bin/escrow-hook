@@ -1,0 +1,28 @@
+#!/bin/sh
+# Knowledge Escrow hook launcher: `escrow-hook <event> [--harness codex|claude]`.
+# Called inline by the agent harness on SessionStart/Stop, so it favours speed
+# (no liveness probe) and must NEVER fail the session: every path exits 0, and
+# nothing reaches stdout except what `escrow hook` itself prints.
+PATH="/usr/bin:/bin${PATH:+:$PATH}"
+export PATH
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd) || exit 0
+PLUGIN_ROOT=$(cd "$SCRIPT_DIR/.." && pwd) || exit 0
+SEA_BIN="$SCRIPT_DIR/escrow-darwin-$(uname -m)"
+
+if [ -x "$SEA_BIN" ]; then
+  "$SEA_BIN" hook "$@" || true
+  exit 0
+fi
+
+if command -v node >/dev/null 2>&1; then
+  version=$(node -p 'process.versions.node' 2>/dev/null) || exit 0
+  major=${version%%.*}
+  rest=${version#*.}
+  minor=${rest%%.*}
+  case "$major$minor" in '' | *[!0-9]*) exit 0 ;; esac
+  if [ "$major" -gt 22 ] || { [ "$major" -eq 22 ] && [ "$minor" -ge 13 ]; }; then
+    node "$PLUGIN_ROOT/server/escrow.cjs" hook "$@" || true
+  fi
+fi
+exit 0

@@ -34,6 +34,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): BrainConfig {
     userMemoryRoot,
     hotMemoryDirs,
     hotMemoryHours: Number(readEnv(env, 'HOT_MEMORY_HOURS') ?? '72'),
+    ingestRetentionDays: Number(readEnv(env, 'INGEST_RETENTION_DAYS') ?? '14'),
     grepRoots,
     enableWrites: readEnv(env, 'ENABLE_WRITES') !== '0',
     metricsEnabled: readEnv(env, 'METRICS_ENABLED') !== '0',
