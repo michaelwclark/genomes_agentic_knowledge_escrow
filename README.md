@@ -30,7 +30,53 @@ a memory kind (project rule, user preference, feature state, fact, etc.) and
 routes it to the right local substrate; reads fan out across every
 configured substrate and merge the results.
 
-## Quick start
+## Install (macOS, Codex)
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/michaelwclark/genomes_agentic_knowledge_escrow/main/install.sh | sh
+```
+
+No Node, Docker, or API keys needed. The installer downloads the release for
+your Mac, verifies its SHA-256 checksum, unpacks it to
+`~/Library/Application Support/KnowledgeEscrow/plugin`, registers it with
+Codex (`codex plugin marketplace add` + `codex plugin add`, from the Codex CLI
+on your PATH or the one bundled in the ChatGPT app), and runs a write/read
+smoke test.
+
+**What gets installed:** a self-contained server binary, a small local
+embedding model, two skills, and two memory hooks.
+
+**The one manual step: trust the hooks.** Codex only runs plugin hooks after
+you approve them. Open Codex, run `/hooks`, and trust the two Knowledge Escrow
+hooks (SessionStart, Stop). Until you do, memory still works, but Codex won't
+be reminded to use it. The installer never writes Codex's trust settings.
+
+- `SessionStart` reminds the agent to read memory before non-trivial work and
+  to write durable learnings afterward.
+- `Stop` copies the session transcript into `~/.knowledge-escrow/ingest/` so
+  recent conversations are searchable. Copies are redacted on read and deleted
+  after 14 days (`KNOWLEDGE_ESCROW_INGEST_RETENTION_DAYS`). It never writes
+  durable memories on its own.
+
+**Where your data lives:** `~/.knowledge-escrow`.
+
+**Upgrade:** re-run the installer with `--upgrade`
+(`curl -fsSL <url> | sh -s -- --upgrade`).
+
+**Uninstall:** `curl -fsSL <url> | sh -s -- --uninstall` removes the plugin and
+Codex registration but keeps your memories; add `--purge-data` to delete
+`~/.knowledge-escrow` too. Other options: `--version <tag>`, `--dry-run`,
+`--no-codex`, `--from-dir <dir>` (offline install from a downloaded release).
+
+**Privacy:** all memory stays on your computer. There are no required network
+calls at runtime and no telemetry; the only network use is the one-time
+download of the release from GitHub. Sensitive values (SSNs, account numbers,
+and similar) are redacted before being written, and again when transcript
+copies are read back.
+
+**Claude Code support:** planned.
+
+## Quick start (from source)
 
 ```sh
 npm install
